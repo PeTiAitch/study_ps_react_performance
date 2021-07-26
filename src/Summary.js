@@ -1,20 +1,9 @@
 import React from "react";
 import levenshtein from "levenshtein";
 
-export class Summary extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    const oldKeys = Object.keys(this.props.cards);
-    const newKeys = Object.keys(nextProps.cards);
-
-    if (oldKeys.length === newKeys.length) {
-      return false;
-    }
-
-    return true;
-  }
-
-  render() {
-    const cards = Object.values(this.props.cards);
+export const Summary = React.memo(
+  function Summary(props) {
+    const cards = Object.values(props.cards);
 
     const distances = { max: 0, min: 100000 };
     cards.forEach((currentCard) => {
@@ -40,10 +29,13 @@ export class Summary extends React.Component {
           border: "3px solid #333",
         }}
       >
-        <div>You have {Object.keys(this.props.cards).length} cards!</div>
+        <div>You have {Object.keys(props.cards).length} cards!</div>
         <div>Max difference in labels: {distances.max}</div>
         <div>Min difference in labels: {distances.min}</div>
       </div>
     );
-  }
-}
+  },
+  (prevProps, newProps) =>
+    Object.values(prevProps.cards).length ===
+    Object.values(newProps.cards).length
+);
