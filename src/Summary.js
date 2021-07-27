@@ -10,23 +10,22 @@ export const Summary = React.memo(
     const cards = Object.values(props.cards);
 
     console.time("calc-distances");
-
     const distances = useMemo(() => {
-      const distanceCalcs = { max: 0, min: 100000 };
-      cards.forEach((currentCard) => {
-        cards.forEach((compareCard) => {
+      const distanceCals = { max: 0, min: 100000 };
+      cards.forEach(currentCard => {
+        cards.forEach(compareCard => {
           if (compareCard === currentCard) {
             return;
           }
           const distance = levenshtein(currentCard.label, compareCard.label);
 
-          distanceCalcs.max = Math.max(distanceCalcs.max, distance);
-          distanceCalcs.min = Math.min(distanceCalcs.min, distance);
+          distanceCals.max = Math.max(distanceCals.max, distance);
+          distanceCals.min = Math.min(distanceCals.min, distance);
         });
       });
-
-      return distanceCalcs;
+      return distanceCals;
     }, [Object.keys(props.cards).length]);
+
     console.timeEnd("calc-distances");
 
     return (

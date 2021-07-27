@@ -14,7 +14,7 @@ export const AddButton = React.memo(function AddButton({ onClick }) {
         right: 100,
         fontSize: 20,
         color: "#fff",
-        cursor: "pointer",
+        cursor: "pointer"
       }}
     >
       Add
