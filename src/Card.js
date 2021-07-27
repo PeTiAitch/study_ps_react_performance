@@ -30,8 +30,8 @@ export const Card = React.memo(
       </div>
     );
   },
-  ({ card: oldCard }, { card: nextCard }) =>
-    oldCard.id === nextCard.id &&
-    oldCard.position.left === nextCard.position.left &&
-    oldCard.position.top === nextCard.position.top
+  ({ card: oldCard }, { card: newCard }) =>
+    oldCard.id === newCard.id &&
+    oldCard.position.left === newCard.position.left &&
+    oldCard.position.top === newCard.position.top
 );
