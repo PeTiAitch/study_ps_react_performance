@@ -1,4 +1,11 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import "./App.css";
 import useComponentSize from "@rehooks/component-size";
 import cardData from "./data.json";
@@ -6,19 +13,21 @@ import uuid from "uuid";
 import { Card } from "./Card";
 import { AddButton } from "./AddButton";
 import { Summary } from "./Summary";
-import { AddModal } from "./AddModal";
+import { ModalLoader } from "./ModalLoader";
+
+const AddModal = lazy(() => import("./AddModal"));
 
 function positionCards(cards, width, height) {
   const updatedCards = {};
 
   Object.values(cards).forEach(
-    card =>
+    (card) =>
       (updatedCards[card.id] = {
         ...card,
         position: {
           left: card.offset.x + width * 0.5,
-          top: card.offset.y + height * 0.5
-        }
+          top: card.offset.y + height * 0.5,
+        },
       })
   );
 
@@ -28,7 +37,7 @@ function positionCards(cards, width, height) {
 function parseData() {
   const cards = {};
 
-  cardData.forEach(task => {
+  cardData.forEach((task) => {
     cards[task.id] = task;
   });
 
@@ -45,9 +54,9 @@ function addCard(cards, label) {
       label,
       offset: {
         x: 0,
-        y: 0
-      }
-    }
+        y: 0,
+      },
+    },
   };
 }
 
@@ -75,12 +84,12 @@ function App() {
     setCards(clonedCards);
   }
 
-  const cardEls = Object.values(cards).map(card => (
+  const cardEls = Object.values(cards).map((card) => (
     <Card
       card={card}
       boardSize={boardSize}
       key={card.id}
-      onDragStart={dragOffset => setDragCardInfo({ card, dragOffset })}
+      onDragStart={(dragOffset) => setDragCardInfo({ card, dragOffset })}
       onDragEnd={() => setDragCardInfo(null)}
       onDoubleClick={() => handleDelete(card)}
     />
@@ -90,7 +99,7 @@ function App() {
     <div
       className="App"
       ref={boardRef}
-      onMouseMove={ev => {
+      onMouseMove={(ev) => {
         if (!dragCardInfo) {
           return;
         }
@@ -103,9 +112,9 @@ function App() {
             ...card,
             position: {
               top: ev.pageY - dragOffset.y,
-              left: ev.pageX - dragOffset.x
-            }
-          }
+              left: ev.pageX - dragOffset.x,
+            },
+          },
         };
 
         setCards(updatedCards);
@@ -115,18 +124,20 @@ function App() {
       <Summary cards={cards} />
       <AddButton onClick={showDialog} />
       {isAddOpen && (
-        <AddModal
-          isOpen={isAddOpen}
-          onClose={() => setIsAddOpen(false)}
-          onAdd={cardText => {
-            const updatedCards = positionCards(
-              addCard(cards, cardText),
-              width,
-              height
-            );
-            setCards(updatedCards);
-          }}
-        />
+        <Suspense fallback={<ModalLoader />}>
+          <AddModal
+            isOpen={isAddOpen}
+            onClose={() => setIsAddOpen(false)}
+            onAdd={(cardText) => {
+              const updatedCards = positionCards(
+                addCard(cards, cardText),
+                width,
+                height
+              );
+              setCards(updatedCards);
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );
